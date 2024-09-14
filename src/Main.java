@@ -1,4 +1,4 @@
-import race.services.RaceFabric;
+import race.utils.RaceFabric;
 
 public class Main {
     public static void main(String[] args) throws InterruptedException {

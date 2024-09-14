@@ -1,6 +1,10 @@
 package race.models;
 
+import race.services.car.CarPrintFull;
+import race.services.car.CarPrintable;
+
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
@@ -24,13 +28,12 @@ public class Race {
 
         List<RaceCarRunnable> cars = new ArrayList<>();
 
-        Car raceCar = new Car();
+        Car raceCar = new Car(new CarPrintFull());
 
         for (int i = 0; i < numberOfCars; i++) {
             raceCar.setCarModel(getRandomRaceCarModel());
             cars.add(new RaceCarRunnable(raceCar.getCarModel(),raceDistance, latch));
         }
-
 
         List<Thread> threads = new ArrayList<>();
         for (RaceCarRunnable car : cars) {
@@ -43,9 +46,11 @@ public class Race {
         latch.await();
         System.out.println("All cars have finished the race!");
 
-        RaceCarRunnable winner = cars.stream().min((car1, car2) -> Long.compare(car1.getFinishTime(), car2.getFinishTime())).orElse(null);
+        RaceCarRunnable winner = cars.stream().min(Comparator.comparingLong(RaceCarRunnable::getFinishTime)).orElse(null);
         if (winner != null) {
-            System.out.println("Winner is " + winner.getCarModel() + " with time " + winner.getFinishTime() + " ms!");
+            System.out.println("The Winner is " + winner.getCarModel() + " with time " + winner.getFinishTime() + " ms!");
+            winner.print();
+
         }
     }
 

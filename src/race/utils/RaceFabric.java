@@ -1,4 +1,4 @@
-package race.services;
+package race.utils;
 
 import race.models.Race;
 

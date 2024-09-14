@@ -22,6 +22,16 @@ public class RaceCarRunnable extends Car implements Runnable {
         this.isFinish = false;
     }
 
+    @Override
+    public void print() {
+        super.print();
+    }
+
+    @Override
+    public RaceCarModels getCarModel() {
+        return super.getCarModel();
+    }
+
     private int getRandomSpeed() {
         Random random = new Random();
         return random.nextInt((getCarModel().getMaxSpeed() - getCarModel().getMaxSpeed() / 2) + 1) + getCarModel().getMaxSpeed() / 2;
