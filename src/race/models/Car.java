@@ -1,10 +1,8 @@
 package race.models;
 
 import race.enums.RaceCarModels;
-import race.interfaces.ICar;
-import race.services.car.CarPrintable;
 
-public class Car implements ICar {
+public class Car {
 
     private RaceCarModels carModel;
 
@@ -22,19 +20,5 @@ public class Car implements ICar {
         return carModel;
     }
 
-    private CarPrintable carPrintable;
-
-    public Car(CarPrintable carPrintable) {
-        this.carPrintable = carPrintable;
-    }
-
-    public void setCarPrintable(CarPrintable carPrintable) {
-        this.carPrintable = carPrintable;
-    }
-
-    @Override
-    public void print() {
-        carPrintable.print(this);
-    }
 }
 

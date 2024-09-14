@@ -1,7 +1,6 @@
 package race.models;
 
-import race.services.car.CarPrintFull;
-import race.services.car.CarPrintable;
+import race.services.RaceCarRunnable;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -9,7 +8,7 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 import static race.enums.RaceCarModels.getRandomRaceCarModel;
-import static race.models.RaceCarRunnable.startRaceTime;
+import static race.services.RaceCarRunnable.startRaceTime;
 
 public class Race {
 
@@ -28,7 +27,7 @@ public class Race {
 
         List<RaceCarRunnable> cars = new ArrayList<>();
 
-        Car raceCar = new Car(new CarPrintFull());
+        Car raceCar = new Car();
 
         for (int i = 0; i < numberOfCars; i++) {
             raceCar.setCarModel(getRandomRaceCarModel());
@@ -47,10 +46,15 @@ public class Race {
         System.out.println("All cars have finished the race!");
 
         RaceCarRunnable winner = cars.stream().min(Comparator.comparingLong(RaceCarRunnable::getFinishTime)).orElse(null);
-        if (winner != null) {
-            System.out.println("The Winner is " + winner.getCarModel() + " with time " + winner.getFinishTime() + " ms!");
-            winner.print();
 
+        if (winner != null) {
+            System.out.println("The Winner is " + winner.getCarModel().getModel() + " with time " + winner.getFinishTime() + " ms!");
+            System.out.println("Maximum speed : " + winner.getCarModel().getMaxSpeed() + " km/h" + "\n" +
+            "Engine : " + winner.getCarModel().getEngine() + "\n" +
+            "Transmission : " + winner.getCarModel().getTransmission() + "\n" +
+            "Power : " + winner.getCarModel().getPower() + "\n" +
+            "Fuel : " + winner.getCarModel().getFuel() + "\n" +
+            "Tires : " + winner.getCarModel().getTires());
         }
     }
 

@@ -1,6 +1,7 @@
-package race.models;
+package race.services;
 
 import race.enums.RaceCarModels;
+import race.models.Car;
 
 import java.util.Random;
 import java.util.concurrent.CountDownLatch;
@@ -12,7 +13,7 @@ public class RaceCarRunnable extends Car implements Runnable {
     private boolean isFinish;
     private CountDownLatch latch;
     private long finishTime;
-    static AtomicLong startRaceTime = new AtomicLong();
+    public static AtomicLong startRaceTime = new AtomicLong();
 
     public RaceCarRunnable(RaceCarModels carModel, int distance, CountDownLatch latch) {
         super(carModel);
@@ -22,10 +23,6 @@ public class RaceCarRunnable extends Car implements Runnable {
         this.isFinish = false;
     }
 
-    @Override
-    public void print() {
-        super.print();
-    }
 
     @Override
     public RaceCarModels getCarModel() {
