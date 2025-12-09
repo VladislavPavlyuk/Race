@@ -1,61 +1,40 @@
 package race.models;
 
+import race.enums.RaceCarModels;
 import race.services.RaceCarRunnable;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicLong;
 
 import static race.enums.RaceCarModels.getRandomRaceCarModel;
-import static race.services.RaceCarRunnable.startRaceTime;
 
 public class Race {
+    // Публичное статическое поле время старта гонки типа AtomicLong
+    public static AtomicLong startRaceTime = new AtomicLong();
+    
+    private final int numberOfCars;
+    private final int raceDistance;
 
-    private int numberOfCars;
-    private int raceDistance;
-
-    public  Race(){}
-
-    public  Race(int numberOfCars,int raceDistance) throws InterruptedException {
+    public Race(int numberOfCars, int raceDistance) {
+        if (numberOfCars <= 0) {
+            throw new IllegalArgumentException("Number of cars must be positive");
+        }
+        if (raceDistance <= 0) {
+            throw new IllegalArgumentException("Race distance must be positive");
+        }
         this.numberOfCars = numberOfCars;
         this.raceDistance = raceDistance;
     }
-    public static void createRace(int numberOfCars,int raceDistance) throws InterruptedException {
 
-        CountDownLatch latch = new CountDownLatch(numberOfCars);
+    public int getNumberOfCars() {
+        return numberOfCars;
+    }
 
-        List<RaceCarRunnable> cars = new ArrayList<>();
-
-        Car raceCar = new Car();
-
-        for (int i = 0; i < numberOfCars; i++) {
-            raceCar.setCarModel(getRandomRaceCarModel());
-            cars.add(new RaceCarRunnable(raceCar.getCarModel(),raceDistance, latch));
-        }
-
-        List<Thread> threads = new ArrayList<>();
-        for (RaceCarRunnable car : cars) {
-            threads.add(new Thread(car));
-        }
-
-        startRaceTime.set(System.currentTimeMillis());
-        startRace(threads);
-
-        latch.await();
-        System.out.println("All cars have finished the race!");
-
-        RaceCarRunnable winner = cars.stream().min(Comparator.comparingLong(RaceCarRunnable::getFinishTime)).orElse(null);
-
-        if (winner != null) {
-            System.out.println("The Winner is " + winner.getCarModel().getModel() + " with time " + winner.getFinishTime() + " ms!");
-            System.out.println("Maximum speed : " + winner.getCarModel().getMaxSpeed() + " km/h" + "\n" +
-            "Engine : " + winner.getCarModel().getEngine() + "\n" +
-            "Transmission : " + winner.getCarModel().getTransmission() + "\n" +
-            "Power : " + winner.getCarModel().getPower() + "\n" +
-            "Fuel : " + winner.getCarModel().getFuel() + "\n" +
-            "Tires : " + winner.getCarModel().getTires());
-        }
+    public int getRaceDistance() {
+        return raceDistance;
     }
 
     public static void startRace(List<Thread> cars) {
@@ -63,11 +42,15 @@ public class Race {
             @Override
             public void run() {
                 try {
+                    // Цикл отсчета до старта
                     for (int i = 3; i > 0; i--) {
                         System.out.println(i + "...");
-                        Thread.sleep(500);
+                        Thread.sleep(500); // Интервал в 500мс
                     }
                     System.out.println("GO!!!");
+                    // Проинициализировать startRaceTime значением текущего системного времени на момент старта всех потоков
+                    startRaceTime.set(System.currentTimeMillis());
+                    // Сразу же после "GO!!!" создать цикл по списку потоков и выполнить start() каждого потока
                     for (Thread car : cars) {
                         car.start();
                     }
@@ -78,47 +61,4 @@ public class Race {
         }).start();
     }
 }
-
-/*public class Race {
-    public static void main(String[] args) throws InterruptedException {
-        int numberOfCars = 3;
-        int raceDistance = 500;
-        CountDownLatch latch = new CountDownLatch(numberOfCars);
-
-        List<RaceCarRunnable> cars = new ArrayList<>();
-        cars.add(new RaceCarRunnable("Car1", 200, raceDistance, latch));
-        cars.add(new RaceCarRunnable("Car2", 180, raceDistance, latch));
-        cars.add(new RaceCarRunnable("Car3", 220, raceDistance, latch));
-
-        List<Thread> threads = new ArrayList<>();
-        for (RaceCarRunnable car : cars) {
-            threads.add(new Thread(car));
-        }
-
-        startRace(threads);
-
-        latch.await();
-        System.out.println("All cars have finished the race!");
-    }
-
-    public static void startRace(List<Thread> cars) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    for (int i = 3; i > 0; i--) {
-                        System.out.println(i + "...");
-                        Thread.sleep(500);
-                    }
-                    System.out.println("GO!!!");
-                    for (Thread car : cars) {
-                        car.start();
-                    }
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        }).start();
-    }
-}*/
 
